@@ -239,11 +239,23 @@ class TabICLCompetingRisks(BaseEstimator):
     
     # Reuse methods from TabICLSurvivor by copying implementation
     def _load_tabicl_model(self):
-        """Load TabICL model (same as TabICLSurvivor)."""
+        """
+        Load TabICL model with fallback to local checkpoints directory.
+        
+        Strategy:
+        1. Try to load from HuggingFace Hub (default)
+        2. If fails, fallback to local 'tabicl_checkpoints' directory
+        3. When loaded from HuggingFace, save copy to 'tabicl_checkpoints'
+        """
         from ..model.tabicl import TabICL
+        import shutil
         
         repo_id = "jingang/TabICL-clf"
         filename = self.checkpoint_version
+        
+        # Local checkpoints directory
+        local_checkpoints_dir = Path("tabicl_checkpoints")
+        local_checkpoint_path = local_checkpoints_dir / filename
         
         ckpt_legacy = "tabicl-classifier.ckpt"
         ckpt_v1 = "tabicl-classifier-v1-0208.ckpt"
@@ -264,18 +276,65 @@ class TabICLCompetingRisks(BaseEstimator):
             raise ValueError(f"Invalid checkpoint version '{filename}'.")
         
         if self.model_path is None:
+            # Try HuggingFace first, fallback to local checkpoints directory
             try:
+                # Try to load from HuggingFace cache
                 model_path_ = Path(hf_hub_download(repo_id=repo_id, filename=filename, local_files_only=True))
-            except LocalEntryNotFoundError:
-                if self.allow_auto_download:
+                if self.verbose:
+                    print(f"Loaded checkpoint from HuggingFace cache: {model_path_}")
+                checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
+                
+                # Save copy to local checkpoints directory
+                try:
+                    local_checkpoints_dir.mkdir(parents=True, exist_ok=True)
+                    if not local_checkpoint_path.exists():
+                        shutil.copy2(model_path_, local_checkpoint_path)
+                        if self.verbose:
+                            print(f"Saved copy to: {local_checkpoint_path}")
+                except Exception as e:
+                    if self.verbose:
+                        print(f"Warning: Could not save to local checkpoints: {e}")
+                
+            except (LocalEntryNotFoundError, Exception):
+                # Try local checkpoints directory
+                if local_checkpoint_path.exists():
+                    if self.verbose:
+                        print(f"Loading checkpoint from local directory: {local_checkpoint_path}")
+                    model_path_ = local_checkpoint_path
+                    checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
+                elif self.allow_auto_download:
+                    # Download from HuggingFace
                     if self.verbose:
                         print(info_message)
                         print(f"Downloading '{filename}' from Hugging Face Hub.\n")
-                    model_path_ = Path(hf_hub_download(repo_id=repo_id, filename=filename))
+                    
+                    try:
+                        model_path_ = Path(hf_hub_download(repo_id=repo_id, filename=filename))
+                        checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
+                        
+                        # Save to local checkpoints directory
+                        try:
+                            local_checkpoints_dir.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(model_path_, local_checkpoint_path)
+                            if self.verbose:
+                                print(f"Saved checkpoint to: {local_checkpoint_path}")
+                        except Exception as save_err:
+                            if self.verbose:
+                                print(f"Warning: Could not save to local checkpoints: {save_err}")
+                    except Exception as download_err:
+                        raise ValueError(
+                            f"Failed to download checkpoint from HuggingFace.\n"
+                            f"Error: {download_err}\n"
+                            f"Please ensure you have internet connection or place checkpoint in '{local_checkpoints_dir}'."
+                        )
                 else:
-                    raise ValueError(f"Checkpoint '{filename}' not found. Enable allow_auto_download=True.")
-            checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
+                    raise ValueError(
+                        f"Checkpoint '{filename}' not found.\n"
+                        f"Checked: HuggingFace cache and '{local_checkpoint_path}'.\n"
+                        f"Enable allow_auto_download=True to download, or place checkpoint in '{local_checkpoints_dir}'."
+                    )
         else:
+            # User provided explicit path
             model_path_ = Path(self.model_path) if isinstance(self.model_path, str) else self.model_path
             if model_path_.exists():
                 checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
