@@ -409,9 +409,11 @@ class TabICLSurvivor(BaseEstimator):
         1. Try to load from HuggingFace Hub (default)
         2. If fails, fallback to local 'tabicl_checkpoints' directory
         3. When loaded from HuggingFace, save copy to 'tabicl_checkpoints'
+        4. Auto-decompress .xz files if needed
         """
         from ..model.tabicl import TabICL
         import shutil
+        import lzma
         
         repo_id = "jingang/TabICL-clf"
         filename = self.checkpoint_version
@@ -419,6 +421,7 @@ class TabICLSurvivor(BaseEstimator):
         # Local checkpoints directory
         local_checkpoints_dir = Path("tabicl_checkpoints")
         local_checkpoint_path = local_checkpoints_dir / filename
+        local_checkpoint_compressed = local_checkpoints_dir / f"{filename}.xz"
 
         ckpt_legacy = "tabicl-classifier.ckpt"
         ckpt_v1 = "tabicl-classifier-v1-0208.ckpt"
@@ -471,6 +474,25 @@ class TabICLSurvivor(BaseEstimator):
                         print(f"Loading checkpoint from local directory: {local_checkpoint_path}")
                     model_path_ = local_checkpoint_path
                     checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
+                elif local_checkpoint_compressed.exists():
+                    # Decompress .xz file
+                    if self.verbose:
+                        print(f"Found compressed checkpoint: {local_checkpoint_compressed}")
+                        print(f"Decompressing to: {local_checkpoint_path}")
+                    try:
+                        with lzma.open(local_checkpoint_compressed, 'rb') as f_in:
+                            with open(local_checkpoint_path, 'wb') as f_out:
+                                shutil.copyfileobj(f_in, f_out)
+                        if self.verbose:
+                            print("Decompression complete!")
+                        model_path_ = local_checkpoint_path
+                        checkpoint = torch.load(model_path_, map_location="cpu", weights_only=True)
+                    except Exception as decompress_err:
+                        raise ValueError(
+                            f"Failed to decompress checkpoint.\n"
+                            f"Error: {decompress_err}\n"
+                            f"Try deleting '{local_checkpoint_compressed}' and re-downloading."
+                        )
                 elif self.allow_auto_download:
                     # Download from HuggingFace
                     if self.verbose:

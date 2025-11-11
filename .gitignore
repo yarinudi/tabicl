@@ -131,3 +131,9 @@ dmypy.json
 # Developer environments
 .idea
 .vscode
+
+# TabICL checkpoints
+# Ignore uncompressed checkpoints (large), but track compressed ones
+tabicl_checkpoints/*.ckpt
+# Allow compressed checkpoints to be tracked
+!tabicl_checkpoints/*.ckpt.xz
