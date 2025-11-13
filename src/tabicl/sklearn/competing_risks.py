@@ -256,7 +256,7 @@ class TabICLCompetingRisks(BaseEstimator):
         filename = self.checkpoint_version
         
         # Local checkpoints directory
-        local_checkpoints_dir = Path("tabicl_checkpoints")
+        local_checkpoints_dir = Path("tabicl/tabicl_checkpoints")
         local_checkpoint_path = local_checkpoints_dir / filename
         local_checkpoint_compressed = local_checkpoints_dir / f"{filename}.xz"
         
