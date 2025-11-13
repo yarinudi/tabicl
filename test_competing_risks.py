@@ -194,6 +194,38 @@ if __name__ == "__main__":
         
         print(f"Cause {k+1:<5} {corr_tabicl:<12.4f} {corr_baseline:<12.4f}")
     
+    # Cumulative Incidence Functions
+    print("\n" + "="*70)
+    print("CUMULATIVE INCIDENCE FUNCTIONS (CIF)")
+    print("="*70)
+    
+    print("\nComputing CIFs for test samples...")
+    
+    # Get CIFs for all causes
+    cifs_tabicl = model_tabicl.predict_cumulative_incidence(X_test, return_array=True)
+    
+    print(f"\nCIF structure:")
+    print(f"  - Number of causes: {len(cifs_tabicl)}")
+    for k in range(1, n_event_types + 1):
+        print(f"  - Cause {k} CIF shape: {cifs_tabicl[k].shape}")
+    
+    # Display CIF values at a few time points for first 3 test samples
+    print(f"\nExample CIF values (first 3 samples):")
+    eval_times = np.percentile(t_test, [25, 50, 75])
+    print(f"  Evaluation times: {eval_times}")
+    
+    for i in range(min(3, len(X_test))):
+        print(f"\n  Sample {i+1}:")
+        for k in range(1, n_event_types + 1):
+            # Get CIF at evaluation times
+            cif_k = model_tabicl.predict_cumulative_incidence(
+                X_test[i:i+1], 
+                times=eval_times, 
+                cause=k, 
+                return_array=True
+            )
+            print(f"    Cause {k}: {cif_k[0]}")
+    
     # Final summary
     print("\n" + "="*70)
     print("SUMMARY")
@@ -203,10 +235,4 @@ if __name__ == "__main__":
     print(f"  - Average C-index: {c_avg_tabicl:.4f}")
     print(f"  - Improvement over MLP: {c_avg_tabicl - c_avg_baseline:+.4f}")
     
-    if c_avg_tabicl > 0.65:
-        print(f"  - ✓ Good discrimination (C-index > 0.65)")
-    if c_avg_tabicl > 0.75:
-        print(f"  - ✓ Excellent discrimination (C-index > 0.75)")
-    
     print("\n" + "="*70)
-

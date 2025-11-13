@@ -136,6 +136,9 @@ class TabICLCompetingRisks(BaseEstimator):
     baseline_cum_hazards_ : List[np.ndarray]
         Baseline cumulative hazards for each event type.
     
+    event_times_per_cause_ : List[np.ndarray]
+        Event times corresponding to baseline hazards for each cause.
+    
     event_times_ : np.ndarray
         Unique event times across all causes.
     
@@ -535,7 +538,7 @@ class TabICLCompetingRisks(BaseEstimator):
         # Train K cause-specific models
         self.models_ = []
         self.baseline_cum_hazards_ = []
-        event_times_per_cause = []
+        self.event_times_per_cause_ = []  # Store per-cause event times
         
         in_dim = embeddings.shape[1]
         
@@ -614,10 +617,10 @@ class TabICLCompetingRisks(BaseEstimator):
             
             self.models_.append(model_k)
             self.baseline_cum_hazards_.append(H0_k)
-            event_times_per_cause.append(etimes_k)
+            self.event_times_per_cause_.append(etimes_k)
         
         # Store all unique event times across all causes
-        all_event_times = np.concatenate(event_times_per_cause)
+        all_event_times = np.concatenate(self.event_times_per_cause_)
         self.event_times_ = np.unique(all_event_times)
         
         return self
@@ -674,6 +677,164 @@ class TabICLCompetingRisks(BaseEstimator):
         
         return risks
     
+    def predict_cumulative_incidence(
+        self,
+        X: Union[np.ndarray, torch.Tensor, pd.DataFrame],
+        times: Optional[Iterable[float]] = None,
+        return_array: bool = False,
+        cause: Optional[int] = None,
+    ) -> Union[List[Tuple[np.ndarray, np.ndarray]], np.ndarray, Dict[int, List[Tuple[np.ndarray, np.ndarray]]], Dict[int, np.ndarray]]:
+        """
+        Predict cause-specific cumulative incidence functions (CIF) for competing risks.
+        
+        For competing risks, CIF_k(t) = P(T ≤ t, cause = k) accounts for the fact that
+        individuals can experience any of the competing events. This is computed using:
+        
+        CIF_k(t) = ∫_0^t S(u-) dH_k(u)
+        
+        Where:
+        - S(t) = exp(-Σ_j H_j(t)) is the overall survival (all causes)
+        - H_k(t) is the cumulative hazard for cause k
+        
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Input features.
+        
+        times : array-like or None
+            Time points at which to evaluate CIF.
+            If None, uses all unique event times from training.
+        
+        return_array : bool, default=False
+            If True, return arrays. If False, return (times, CIF) tuples.
+        
+        cause : int or None
+            If int in [1, K], return CIF for that cause only.
+            If None, return CIFs for all K causes.
+        
+        Returns
+        -------
+        cif_functions : dict or list or np.ndarray
+            If cause is None:
+                - If return_array=False: dict mapping cause -> list of (times, CIF) tuples
+                - If return_array=True: dict mapping cause -> array of shape (n_samples, n_times)
+            If cause is specified:
+                - If return_array=False: list of (times, CIF) tuples for that cause
+                - If return_array=True: array of shape (n_samples, n_times) for that cause
+        
+        Examples
+        --------
+        >>> # Get CIF for all causes as arrays
+        >>> cifs = model.predict_cumulative_incidence(X_test, return_array=True)
+        >>> cif_cause_1 = cifs[1]  # Shape: (n_samples, n_times)
+        >>> 
+        >>> # Get CIF for specific cause
+        >>> cif_1 = model.predict_cumulative_incidence(X_test, cause=1, return_array=True)
+        """
+        check_is_fitted(self, ["models_", "baseline_cum_hazards_", "event_times_per_cause_", "event_times_"])
+        
+        if OLD_SKLEARN:
+            X = self._validate_data(X, reset=False, dtype=None, cast_to_ndarray=False)
+        else:
+            X = self._validate_data(X, reset=False, dtype=None, skip_check_array=True)
+        
+        # Get embeddings
+        if self.backbone.lower() == "tabicl":
+            embeddings = self._extract_tabicl_embeddings(X)
+        else:
+            embeddings = self._standardize_inputs(np.asarray(X))
+        
+        X_tensor = _to_tensor(embeddings, self.device_)
+        n_samples = embeddings.shape[0]
+        
+        # Determine time grid
+        if times is None:
+            times = self.event_times_
+        times = np.asarray(times, dtype=float)
+        times = np.sort(times)
+        n_times = len(times)
+        
+        # Get risk scores for all causes
+        all_risks = []
+        for model_k in self.models_:
+            with torch.no_grad():
+                risk_k = model_k(X_tensor).detach().cpu().numpy()
+            all_risks.append(risk_k)  # Each is shape (n_samples,)
+        
+        # Compute CIF for each cause
+        def compute_cif_for_cause(cause_idx):
+            """Compute CIF for cause_idx (0-indexed, so cause_idx=0 means cause 1)."""
+            cif_samples = []
+            for i in range(n_samples):
+                # Compute cause-specific cumulative hazards for all causes at each time
+                H_all_causes = np.zeros((self.n_event_types, n_times))
+                
+                for k_idx in range(self.n_event_types):
+                    risk_k_i = all_risks[k_idx][i]
+                    H0_k = self.baseline_cum_hazards_[k_idx]
+                    event_times_k = self.event_times_per_cause_[k_idx]
+                    
+                    # Interpolate baseline cumulative hazard to target times
+                    H0_k_at_times = np.interp(
+                        times, 
+                        event_times_k,
+                        H0_k,
+                        left=0,
+                        right=H0_k[-1] if len(H0_k) > 0 else 0
+                    )
+                    
+                    # Individual cumulative hazard: H_k(t) = H0_k(t) * exp(risk_k)
+                    H_all_causes[k_idx, :] = H0_k_at_times * np.exp(risk_k_i)
+                
+                # Overall survival: S(t) = exp(-Σ_k H_k(t))
+                H_total = H_all_causes.sum(axis=0)  # Sum over causes
+                S_t = np.exp(-H_total)
+                
+                # CIF for this cause: CIF_k(t) = ∫_0^t S(u-) dH_k(u)
+                H_k = H_all_causes[cause_idx, :]
+                
+                # Numerical integration
+                # Prepend 0 to start integration from 0
+                H_k_with_zero = np.concatenate([[0], H_k])
+                S_t_with_zero = np.concatenate([[1.0], S_t])
+                
+                # CIF increment at each time: S(t-) * dH_k
+                dH_k = np.diff(H_k_with_zero)
+                # Use S at left endpoint (S(t-))
+                S_left = S_t_with_zero[:-1]
+                
+                cif_increments = S_left * dH_k
+                cif = np.cumsum(cif_increments)
+                
+                cif_samples.append(cif)
+            
+            return times, np.array(cif_samples)  # (n_samples, n_times)
+        
+        # Compute for requested causes
+        if cause is not None:
+            if not (1 <= cause <= self.n_event_types):
+                raise ValueError(f"cause must be in [1, {self.n_event_types}], got {cause}")
+            
+            times_out, cif_array = compute_cif_for_cause(cause - 1)
+            
+            if return_array:
+                return cif_array
+            else:
+                # Return list of (times, CIF) tuples
+                return [(times_out, cif_array[i, :]) for i in range(n_samples)]
+        else:
+            # Return all causes
+            cif_dict = {}
+            for k in range(1, self.n_event_types + 1):
+                times_out, cif_array = compute_cif_for_cause(k - 1)
+                
+                if return_array:
+                    cif_dict[k] = cif_array
+                else:
+                    cif_dict[k] = [(times_out, cif_array[i, :]) for i in range(n_samples)]
+            
+            return cif_dict
+
     def score(
         self, 
         X: Union[np.ndarray, torch.Tensor, pd.DataFrame], 
