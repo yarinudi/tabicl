@@ -877,6 +877,51 @@ class TabICLSurvivor(BaseEstimator):
             return np.stack([s for _, s in out], axis=0)
         return out
 
+    def predict_cumulative_incidence(
+        self,
+        X: Union[np.ndarray, torch.Tensor, pd.DataFrame],
+        times: Optional[Iterable[float]] = None,
+        return_array: bool = False,
+    ) -> Union[List[Tuple[np.ndarray, np.ndarray]], np.ndarray]:
+        """Predict cumulative incidence function (CIF) for each sample.
+        
+        For standard survival (single event type), CIF(t) = 1 - S(t).
+        This represents the probability of experiencing the event by time t.
+
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            Input data.
+        
+        times : array-like or None
+            Time points at which to evaluate CIF.
+            If None, uses training event times.
+        
+        return_array : bool, default=False
+            If True, return array of shape (n_samples, n_times).
+            If False, return list of (times, CIF) tuples.
+
+        Returns
+        -------
+        cif_functions : list or np.ndarray
+            If return_array=False: list of (times, CIF(times)) tuples.
+            If return_array=True: array of shape (n_samples, n_times).
+        """
+        check_is_fitted(self, ["model_", "baseline_cum_hazard_", "event_times_"])
+        
+        # Get survival functions
+        survival_funcs = self.predict_survival_function(X, times=times, return_array=False)
+        
+        out = []
+        for times_i, S_i in survival_funcs:
+            # CIF(t) = 1 - S(t)
+            CIF_i = 1.0 - S_i
+            out.append((times_i, CIF_i))
+        
+        if return_array:
+            return np.stack([cif for _, cif in out], axis=0)
+        return out
+
     def score(self, X: Union[np.ndarray, torch.Tensor, pd.DataFrame], 
               y: Tuple[Iterable, Iterable]) -> float:
         """Compute concordance index (C-index).

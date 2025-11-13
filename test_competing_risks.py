@@ -304,6 +304,19 @@ if __name__ == "__main__":
         print(f"  - Improvement over MLP: {c_avg_tabicl - c_avg_baseline:+.4f}")
         
         print("\n" + "="*70)
+
+        print("\n Computing CIFs for test samples...")
+
+        # Get CIFs for all causes
+        cifs_tabicl_dict = model_tabicl.predict_cumulative_incidence(X_test, return_array=False)
+        cifs, times = [], []
+        for k, v in cifs_tabicl_dict.items():
+            v = np.stack(v)
+            times.append(v[:, 0, :]); cifs.append(v[:, 1, :])
+        
+        cifs, times = np.array(cifs), np.array(times)  # (K, N, T)
+        t_eval = times[0][0]
+
         # results = {}
         # for i in range(K):
         #     print(f'##### Event {i + 1} #####')
@@ -318,69 +331,73 @@ if __name__ == "__main__":
         #     print(f"Ctd-index-{i + 1}: ", results[f'ctd-index-k{i + 1}'])
         #     print(f"Integrated-Brier-Score-{i + 1}: ", results[f'ibrier-score-k{i + 1}'])
         #     print(f"Integrated-NBLL-{i + 1}: ", results[f'inbll-k{i + 1}'])
+        
 
-        # import plotly.graph_objects as go
-        # from lifelines import KaplanMeierFitter
+        import plotly.graph_objects as go
+        from lifelines import KaplanMeierFitter
 
 
-        # def plot_model_cif(S_pred, t_eval):
-        #     """
-        #     Overlay KKM and model mean survival for cause k (0-based)
-        #     """
-        #     K = S_pred.shape[0]
+        def plot_model_cif(cifs, t_eval):
+            """
+            Overlay KKM and model mean survival for cause k (0-based)
+            """
+            K = cifs.shape[0]
             
-        #     fig = go.Figure()
-        #     for k in range(K):
-        #         F_model = (1 - S_pred).mean(2)[k]
+            fig = go.Figure()
+            for k in range(K):
+                F_model = cifs.mean(1)[k]
 
-        #         fig.add_trace(
-        #             go.Scatter(
-        #                 x=t_eval, y=F_model,
-        #                 mode="lines",
-        #                 name="Model CIF cause " + str(k+1)
-        #             )
-        #         )
-        #     fig.update_layout(
-        #         title=f"Model CIF - Competing Outcomes - {K} Causes",
-        #         xaxis_title="t",
-        #         yaxis_title="CIF",
-        #         yaxis_range=[0, 1],
-        #         hovermode='x unified'
-        #     )
-        #     fig.show()
+                fig.add_trace(
+                    go.Scatter(
+                        x=t_eval, y=F_model,
+                        mode="lines",
+                        name="Model CIF cause " + str(k+1)
+                    )
+                )
+            fig.update_layout(
+                title=f"Model CIF - Competing Outcomes - {K} Causes",
+                xaxis_title="t",
+                yaxis_title="CIF",
+                yaxis_range=[0, 1],
+                hovermode='x unified'
+            )
+            fig.show()
+            return fig
+        
+        # Calculate t_eval and mean survival rate from CIFk dictionary
 
-        # plot_model_cif(surv, t_eval)
+        fig = plot_model_cif(cifs, t_eval)
 
-        # # KM vs Overall Survival
-        # km = KaplanMeierFitter()
-        # km.fit(durations=t_test, event_observed=(e_test > 0).astype(int))
-        # t_km, S_km = km.survival_function_.index.values, km.survival_function_['KM_estimate'].values
+        # KM vs Overall Survival
+        km = KaplanMeierFitter()
+        km.fit(durations=t_test, event_observed=(e_test > 0).astype(int))
+        t_km, S_km = km.survival_function_.index.values, km.survival_function_['KM_estimate'].values
 
-        # S_model = 1 - (1 - surv).sum(axis=0).mean(axis=-1)  # mean over N, sum over K
-        # S_model_std = (1 - surv).sum(axis=0).std(axis=-1)
-        # z_score = 1.96  # [95%]
-        # upper_bound = S_model + z_score * S_model_std
-        # lower_bound = S_model - z_score * S_model_std
+        S_model = 1 - cifs.sum(axis=0).mean(axis=0)  # mean over N, sum over K
+        S_model_std = cifs.sum(axis=0).std(axis=0)
+        z_score = 1.96  # [95%]
+        upper_bound = S_model + z_score * S_model_std
+        lower_bound = S_model - z_score * S_model_std
 
-        # fig = go.Figure()
-        # fig.add_trace(go.Scatter(x=t_km, y=S_km, mode='lines',name="KM overall (11 events)", line=dict(dash="dash")))
-        # fig.add_trace(go.Scatter(x=t_eval, y=S_model, mode="lines", name="Model overall (11 events)"))
-        # fig.add_trace(go.Scatter(
-        #     x=t_eval, y=upper_bound, mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(0, 100, 200, 0.2)',
-        #     showlegend=False, name='95%CI'
-        # ))
-        # fig.add_trace(go.Scatter(
-        #     x=t_eval, y=lower_bound, mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(0, 100, 200, 0.2)',
-        #     showlegend=False,
-        # ))
-        # fig.update_layout(
-        #             title=f"Kaplan-Meier vs Model Overall Survival with 95% CI",
-        #             xaxis_title="t",
-        #             yaxis_title="S(t)",
-        #             yaxis_range=[0, 1],
-        #             hovermode='x unified'
-        #         )
-        # fig.show()
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=t_km, y=S_km, mode='lines',name=f"KM overall ({K} events)", line=dict(dash="dash")))
+        fig.add_trace(go.Scatter(x=t_eval, y=S_model, mode="lines", name=f"Model overall ({K} events)"))
+        fig.add_trace(go.Scatter(
+            x=t_eval, y=upper_bound, mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(0, 100, 200, 0.2)',
+            showlegend=False, name='95%CI'
+        ))
+        fig.add_trace(go.Scatter(
+            x=t_eval, y=lower_bound, mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(0, 100, 200, 0.2)',
+            showlegend=False,
+        ))
+        fig.update_layout(
+                    title=f"Kaplan-Meier vs Model Overall Survival with 95% CI",
+                    xaxis_title="t",
+                    yaxis_title="S(t)",
+                    yaxis_range=[0, 1],
+                    hovermode='x unified'
+                )
+        fig.show()
 
         total_results.append(results)
 
