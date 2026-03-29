@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Model discrimination, calibration, and reclassification - TIA (5-year)}
+\label{tab:perf_tia_5y}
+\begin{tabular}{lccccccccccccc}
+\toprule
+Model & C\_td & Cal\_Intercept & Cal\_Slope & Brier & PPV@0\% & NPV@0\% & PPV@1\% & NPV@1\% & PPV@2\% & NPV@2\% & PPV@5\% & NPV@5\% & NRI \\
+\midrule
+O & 0.646 & -0.131 & 0.981 & 0.010 & 0.012 & 0.997 & 0.015 & 0.995 & 0.024 & 0.991 & -- & 0.989 & ref \\
+O+Q & 0.667 & -0.137 & 0.977 & 0.010 & 0.012 & 0.994 & 0.018 & 0.996 & 0.021 & 0.991 & -- & 0.989 & 0.211 \\
+S & 0.598 & 0.062 & 1.023 & 0.010 & 0.011 & 1.000 & 0.014 & 0.993 & 0.019 & 0.990 & -- & 0.989 & -0.360 \\
+O+S & 0.636 & 0.164 & 1.046 & 0.010 & 0.012 & 0.997 & 0.016 & 0.995 & 0.025 & 0.991 & -- & 0.989 & -0.230 \\
+O+Q+S & 0.653 & -0.052 & 0.998 & 0.010 & 0.011 & 0.994 & 0.016 & 0.994 & 0.032 & 0.992 & -- & 0.989 & 0.108 \\
+\bottomrule
+\end{tabular}
+\end{table}

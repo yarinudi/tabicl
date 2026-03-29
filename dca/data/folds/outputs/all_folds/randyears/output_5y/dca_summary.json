@@ -1,0 +1,147 @@
+{
+  "mode": "survival",
+  "n_rows_used": 14319,
+  "weighted_event_rate": 0.03534656178875922,
+  "models": {
+    "O": {
+      "risk_column": "risks_5y_o",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.24
+        ]
+      ],
+      "max_net_benefit": 0.018541035478147484,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "is_reference_model": true
+      },
+      "calibration": {
+        "calibration_intercept": 0.04538610258902059,
+        "calibration_slope": 0.9901628672334317,
+        "brier_score": 0.03263815180196164,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/randyears/output_5y/calibration_curve_O.csv"
+    },
+    "O+Q": {
+      "risk_column": "risks_5y_q",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.35
+        ]
+      ],
+      "max_net_benefit": 0.02354901259103406,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.8653363913481573
+        }
+      },
+      "calibration": {
+        "calibration_intercept": 0.32186990575949265,
+        "calibration_slope": 1.0942440362589363,
+        "brier_score": 0.027068212929110432,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/randyears/output_5y/calibration_curve_O+Q.csv"
+    },
+    "S": {
+      "risk_column": "risks_5y_s",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.26
+        ],
+        [
+          0.3,
+          0.33
+        ]
+      ],
+      "max_net_benefit": 0.018903107199406837,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": -0.09723331638951421
+        }
+      },
+      "calibration": {
+        "calibration_intercept": 0.2963275027710523,
+        "calibration_slope": 1.0681861362411214,
+        "brier_score": 0.032488982493273005,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/randyears/output_5y/calibration_curve_S.csv"
+    },
+    "O+S": {
+      "risk_column": "risks_5y_os",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.35
+        ]
+      ],
+      "max_net_benefit": 0.019164969929893652,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.27836795508598156
+        }
+      },
+      "calibration": {
+        "calibration_intercept": 0.1513076387124317,
+        "calibration_slope": 1.0205725275121724,
+        "brier_score": 0.03197550531155923,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/randyears/output_5y/calibration_curve_O+S.csv"
+    },
+    "O+O+Q+S": {
+      "risk_column": "risks_5y_qs",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.35
+        ]
+      ],
+      "max_net_benefit": 0.022689921594319783,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.8916582345105843
+        }
+      },
+      "calibration": {
+        "calibration_intercept": 0.36284328562881357,
+        "calibration_slope": 1.11037280883701,
+        "brier_score": 0.027200220596890583,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/randyears/output_5y/calibration_curve_O+O+Q+S.csv"
+    }
+  },
+  "time_column": "time_years",
+  "event_column": "event",
+  "event_value": "1",
+  "horizon": 5.0,
+  "nri": {
+    "reference_model": "O",
+    "cutoffs": [
+      0.0
+    ],
+    "method": "reclassification.calculate_nri",
+    "weighting": "unweighted",
+    "note": "NRI is computed on binary outcomes without IPCW/sample-weight adjustment. Interpret survival-mode NRI as exploratory."
+  },
+  "calibration_metrics_file": "data/folds/outputs/randyears/output_5y/calibration_metrics.json",
+  "calibration_plot_file": "data/folds/outputs/randyears/output_5y/calibration_plot.png"
+}

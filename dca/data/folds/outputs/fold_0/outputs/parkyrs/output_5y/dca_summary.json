@@ -1,0 +1,147 @@
+{
+  "mode": "survival",
+  "n_rows_used": 2768,
+  "weighted_event_rate": 0.00438488982767391,
+  "models": {
+    "O": {
+      "risk_column": "risks_5y_o",
+      "better_than_treat_all_and_none_threshold_intervals": [],
+      "max_net_benefit": 0.0,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "is_reference_model": true
+      },
+      "bootstrap_ci_file": "data/folds/fold_0/outputs/parkyrs/output_5y/dca_ci_O.csv",
+      "calibration": {
+        "calibration_intercept": -4.36623919517535,
+        "calibration_slope": 0.19896181853604591,
+        "brier_score": 0.004370380338566771,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_curve_O.csv"
+    },
+    "Q": {
+      "risk_column": "risks_5y_q",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.005,
+          0.01
+        ]
+      ],
+      "max_net_benefit": 0.000997540989336576,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.5670712729536258
+        }
+      },
+      "bootstrap_ci_file": "data/folds/fold_0/outputs/parkyrs/output_5y/dca_ci_Q.csv",
+      "calibration": {
+        "calibration_intercept": 4.930124465364172,
+        "calibration_slope": 1.9970929145114915,
+        "brier_score": 0.0043570701017714665,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_curve_Q.csv"
+    },
+    "S": {
+      "risk_column": "risks_5y_s",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.005,
+          0.015
+        ],
+        [
+          0.025,
+          0.025
+        ]
+      ],
+      "max_net_benefit": 0.0012348913339630832,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.8074489054881211
+        }
+      },
+      "bootstrap_ci_file": "data/folds/fold_0/outputs/parkyrs/output_5y/dca_ci_S.csv",
+      "calibration": {
+        "calibration_intercept": -0.4762996175966445,
+        "calibration_slope": 0.9361370167152906,
+        "brier_score": 0.004352908998450469,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_curve_S.csv"
+    },
+    "O+S": {
+      "risk_column": "risks_5y_os",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.005,
+          0.03
+        ]
+      ],
+      "max_net_benefit": 0.0006272211698408979,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.8473908081751218
+        }
+      },
+      "bootstrap_ci_file": "data/folds/fold_0/outputs/parkyrs/output_5y/dca_ci_O+S.csv",
+      "calibration": {
+        "calibration_intercept": -0.7333149219774048,
+        "calibration_slope": 0.8843410839592872,
+        "brier_score": 0.004349540437117793,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_curve_O+S.csv"
+    },
+    "Q+S": {
+      "risk_column": "risks_5y_qs",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.005,
+          0.015
+        ]
+      ],
+      "max_net_benefit": 0.0012294413437605872,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.8212470173254487
+        }
+      },
+      "bootstrap_ci_file": "data/folds/fold_0/outputs/parkyrs/output_5y/dca_ci_Q+S.csv",
+      "calibration": {
+        "calibration_intercept": 0.7003792238873684,
+        "calibration_slope": 1.1741926905035562,
+        "brier_score": 0.004343219988938593,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_curve_Q+S.csv"
+    }
+  },
+  "time_column": "time_years",
+  "event_column": "event",
+  "event_value": "1",
+  "horizon": 5.0,
+  "nri": {
+    "reference_model": "O",
+    "cutoffs": [
+      0.0
+    ],
+    "method": "reclassification.calculate_nri",
+    "weighting": "unweighted",
+    "note": "NRI is computed on binary outcomes without IPCW/sample-weight adjustment. Interpret survival-mode NRI as exploratory."
+  },
+  "calibration_metrics_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_metrics.json",
+  "calibration_plot_file": "data/folds/fold_0/outputs/parkyrs/output_5y/calibration_plot.png"
+}

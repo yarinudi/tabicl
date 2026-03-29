@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Model discrimination, calibration, and reclassification - Stroke (3-year)}
+\label{tab:perf_stroke_3y}
+\begin{tabular}{lccccccccccccc}
+\toprule
+Model & C\_td & Cal\_Intercept & Cal\_Slope & Brier & PPV@0\% & NPV@0\% & PPV@1\% & NPV@1\% & PPV@2\% & NPV@2\% & PPV@5\% & NPV@5\% & NRI \\
+\midrule
+O & 0.693 & 0.253 & 1.076 & 0.005 & 0.009 & 0.998 & 0.005 & 0.995 & 0.000 & 0.995 & -- & 0.995 & ref \\
+O+Q & 0.659 & 0.346 & 1.096 & 0.005 & 0.008 & 0.997 & 0.014 & 0.996 & 0.038 & 0.995 & -- & 0.995 & 0.042 \\
+S & 0.459 & -7.537 & -0.431 & 0.005 & 0.005 & 0.995 & 0.000 & 0.994 & 0.000 & 0.995 & 0.000 & 0.995 & -0.601 \\
+O+S & 0.544 & -4.354 & 0.171 & 0.005 & 0.007 & 0.996 & 0.007 & 0.995 & 0.000 & 0.995 & -- & 0.995 & -0.523 \\
+O+Q+S & 0.582 & -3.448 & 0.345 & 0.005 & 0.008 & 0.997 & 0.003 & 0.995 & 0.000 & 0.995 & -- & 0.995 & -0.638 \\
+\bottomrule
+\end{tabular}
+\end{table}

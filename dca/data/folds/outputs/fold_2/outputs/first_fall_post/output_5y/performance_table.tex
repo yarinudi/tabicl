@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Model discrimination, calibration, and reclassification - Hip Fracture (5-year)}
+\label{tab:perf_pd_5y}
+\begin{tabular}{lccccccccccccc}
+\toprule
+Model & C\_td & Cal\_Intercept & Cal\_Slope & Brier & PPV@0\% & NPV@0\% & PPV@1\% & NPV@1\% & PPV@2\% & NPV@2\% & PPV@5\% & NPV@5\% & NRI \\
+\midrule
+O & 0.644 & 0.524 & 1.124 & 0.020 & 0.021 & -- & 0.024 & 0.998 & 0.029 & 0.984 & 0.069 & 0.980 & ref \\
+O+Q & 0.671 & 0.704 & 1.168 & 0.020 & 0.021 & -- & 0.024 & 0.995 & 0.034 & 0.986 & 0.090 & 0.981 & 0.368 \\
+S & 0.582 & 1.042 & 1.248 & 0.020 & 0.021 & -- & 0.021 & -- & 0.026 & 0.982 & 0.061 & 0.979 & -0.263 \\
+O+S & 0.642 & 1.436 & 1.358 & 0.020 & 0.021 & -- & 0.022 & 0.994 & 0.031 & 0.985 & 0.104 & 0.980 & -0.120 \\
+O+Q+S & 0.672 & 0.990 & 1.241 & 0.020 & 0.021 & 1.000 & 0.024 & 0.995 & 0.035 & 0.986 & 0.105 & 0.982 & 0.281 \\
+\bottomrule
+\end{tabular}
+\end{table}

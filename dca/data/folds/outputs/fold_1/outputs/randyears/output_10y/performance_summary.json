@@ -1,0 +1,238 @@
+{
+  "mode": "survival",
+  "n_rows_ipcw": 840,
+  "weighted_event_rate": 0.13439158952329658,
+  "ppv_npv_thresholds": [
+    0.05,
+    0.1,
+    0.15,
+    0.2
+  ],
+  "models": {
+    "O": {
+      "risk_column": "risks_10y_o",
+      "C_td": 0.7496123644822335,
+      "calibration": {
+        "calibration_intercept": 1.1248264637646783,
+        "calibration_slope": 1.3562419916850446,
+        "brier_score": 0.09782631611662926,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "classification": {
+        "0.0500": {
+          "threshold": 0.05,
+          "PPV": 0.19392084349089564,
+          "NPV": 0.9688493554451137,
+          "sensitivity": 0.9152283781118803,
+          "specificity": 0.40934579439252333
+        },
+        "0.1000": {
+          "threshold": 0.1,
+          "PPV": 0.30786534357693707,
+          "NPV": 0.942179871477969,
+          "sensitivity": 0.7015152200969411,
+          "specificity": 0.7551401869158879
+        },
+        "0.1500": {
+          "threshold": 0.15,
+          "PPV": 0.43788746936662803,
+          "NPV": 0.9226915048115818,
+          "sensitivity": 0.515819237589657,
+          "specificity": 0.897196261682243
+        },
+        "0.2000": {
+          "threshold": 0.2,
+          "PPV": 0.5149582372183578,
+          "NPV": 0.9095004399306186,
+          "sensitivity": 0.3962325638531056,
+          "specificity": 0.9420560747663552
+        }
+      },
+      "nri": {
+        "is_reference": true
+      }
+    },
+    "O+Q": {
+      "risk_column": "risks_10y_q",
+      "C_td": 0.7849174214702118,
+      "calibration": {
+        "calibration_intercept": 0.5581163886014929,
+        "calibration_slope": 1.0568333185585255,
+        "brier_score": 0.09583963093902094,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "classification": {
+        "0.0500": {
+          "threshold": 0.05,
+          "PPV": 0.22815502083370767,
+          "NPV": 0.965439480965003,
+          "sensitivity": 0.8754485927573831,
+          "specificity": 0.5401869158878505
+        },
+        "0.1000": {
+          "threshold": 0.1,
+          "PPV": 0.3403892401124804,
+          "NPV": 0.937988772123113,
+          "sensitivity": 0.6585512099775335,
+          "specificity": 0.8018691588785046
+        },
+        "0.1500": {
+          "threshold": 0.15,
+          "PPV": 0.4514848919206191,
+          "NPV": 0.9270137448374698,
+          "sensitivity": 0.5450205934925805,
+          "specificity": 0.897196261682243
+        },
+        "0.2000": {
+          "threshold": 0.2,
+          "PPV": 0.5139894400942854,
+          "NPV": 0.9124574717854564,
+          "sensitivity": 0.42016321317481586,
+          "specificity": 0.9383177570093457
+        }
+      },
+      "nri": {
+        "cutoff_nri": {
+          "0.000000": 0.39460701700628165
+        }
+      }
+    },
+    "S": {
+      "risk_column": "risks_10y_s",
+      "C_td": 0.7376377644961335,
+      "calibration": {
+        "calibration_intercept": 1.0855898178019046,
+        "calibration_slope": 1.3305052443716048,
+        "brier_score": 0.10258351525230305,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "classification": {
+        "0.0500": {
+          "threshold": 0.05,
+          "PPV": 0.1496780792297324,
+          "NPV": 0.9500568199927343,
+          "sensitivity": 0.9430406904882863,
+          "specificity": 0.16822429906542058
+        },
+        "0.1000": {
+          "threshold": 0.1,
+          "PPV": 0.3639917293805039,
+          "NPV": 0.9377680007327833,
+          "sensitivity": 0.6476676436010013,
+          "specificity": 0.8242990654205608
+        },
+        "0.1500": {
+          "threshold": 0.15,
+          "PPV": 0.42164808782846597,
+          "NPV": 0.9167254455895733,
+          "sensitivity": 0.47396613685968153,
+          "specificity": 0.8990654205607477
+        },
+        "0.2000": {
+          "threshold": 0.2,
+          "PPV": 0.43523585157288175,
+          "NPV": 0.8928673551886541,
+          "sensitivity": 0.2690612374997264,
+          "specificity": 0.9457943925233644
+        }
+      },
+      "nri": {
+        "cutoff_nri": {
+          "0.000000": -0.2772483529952504
+        }
+      }
+    },
+    "O+S": {
+      "risk_column": "risks_10y_os",
+      "C_td": 0.7772064608522109,
+      "calibration": {
+        "calibration_intercept": 1.1339044319952691,
+        "calibration_slope": 1.351223605430972,
+        "brier_score": 0.0956689766927249,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "classification": {
+        "0.0500": {
+          "threshold": 0.05,
+          "PPV": 0.20878781430148127,
+          "NPV": 0.9731010166421792,
+          "sensitivity": 0.9181330441335083,
+          "specificity": 0.45981308411214955
+        },
+        "0.1000": {
+          "threshold": 0.1,
+          "PPV": 0.36403619479954097,
+          "NPV": 0.9398206512598141,
+          "sensitivity": 0.6615748619020342,
+          "specificity": 0.8205607476635514
+        },
+        "0.1500": {
+          "threshold": 0.15,
+          "PPV": 0.445736844818201,
+          "NPV": 0.9277533442630558,
+          "sensitivity": 0.5518651575654873,
+          "specificity": 0.8934579439252337
+        },
+        "0.2000": {
+          "threshold": 0.2,
+          "PPV": 0.5633302385357943,
+          "NPV": 0.915260418136997,
+          "sensitivity": 0.4348741283790062,
+          "specificity": 0.9476635514018691
+        }
+      },
+      "nri": {
+        "cutoff_nri": {
+          "0.000000": 0.15008426535927688
+        }
+      }
+    },
+    "O+Q+S": {
+      "risk_column": "risks_10y_qs",
+      "C_td": 0.7918552012054091,
+      "calibration": {
+        "calibration_intercept": 0.6818033900880786,
+        "calibration_slope": 1.1217367061635581,
+        "brier_score": 0.0948287629263164,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "classification": {
+        "0.0500": {
+          "threshold": 0.05,
+          "PPV": 0.23022070447554502,
+          "NPV": 0.9735261886536031,
+          "sensitivity": 0.9073488399689408,
+          "specificity": 0.5289719626168224
+        },
+        "0.1000": {
+          "threshold": 0.1,
+          "PPV": 0.3879205220676203,
+          "NPV": 0.9402004112619978,
+          "sensitivity": 0.6561890564199951,
+          "specificity": 0.8392523364485981
+        },
+        "0.1500": {
+          "threshold": 0.15,
+          "PPV": 0.4872571766349312,
+          "NPV": 0.9301472629204194,
+          "sensitivity": 0.5605964314164895,
+          "specificity": 0.908411214953271
+        },
+        "0.2000": {
+          "threshold": 0.2,
+          "PPV": 0.5206520607630262,
+          "NPV": 0.9140254125182309,
+          "sensitivity": 0.4315252986546203,
+          "specificity": 0.9383177570093457
+        }
+      },
+      "nri": {
+        "cutoff_nri": {
+          "0.000000": 0.4191818599662939
+        }
+      }
+    }
+  },
+  "n_rows_total": 3413,
+  "horizon": 10.0
+}

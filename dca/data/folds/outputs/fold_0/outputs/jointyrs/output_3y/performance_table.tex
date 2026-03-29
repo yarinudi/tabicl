@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Model discrimination, calibration, and reclassification - Joint Replacement (3-year)}
+\label{tab:perf_joint_3y}
+\begin{tabular}{lccccccccccccc}
+\toprule
+Model & C\_td & Cal\_Intercept & Cal\_Slope & Brier & PPV@5\% & NPV@5\% & PPV@10\% & NPV@10\% & PPV@15\% & NPV@15\% & PPV@20\% & NPV@20\% & NRI \\
+\midrule
+O & 0.615 & 0.804 & 1.250 & 0.040 & 0.075 & 0.967 & -- & 0.958 & -- & 0.958 & -- & 0.958 & ref \\
+O+Q & 0.693 & 0.882 & 1.290 & 0.039 & 0.078 & 0.973 & 0.168 & 0.960 & -- & 0.958 & -- & 0.958 & 0.526 \\
+S & 0.588 & 0.491 & 1.148 & 0.040 & 0.069 & 0.965 & -- & 0.958 & -- & 0.958 & -- & 0.958 & -0.196 \\
+O+S & 0.628 & 0.110 & 1.029 & 0.040 & 0.066 & 0.966 & 0.083 & 0.959 & -- & 0.958 & -- & 0.958 & 0.237 \\
+O+Q+S & 0.766 & 0.503 & 1.176 & 0.038 & 0.101 & 0.981 & 0.163 & 0.969 & 0.223 & 0.963 & 0.355 & 0.961 & 0.782 \\
+\bottomrule
+\end{tabular}
+\end{table}

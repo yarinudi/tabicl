@@ -1,0 +1,142 @@
+{
+  "mode": "survival",
+  "n_rows_used": 14332,
+  "weighted_event_rate": 0.03570098505934674,
+  "models": {
+    "O": {
+      "risk_column": "risks_5y_o",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.03,
+          0.05
+        ]
+      ],
+      "max_net_benefit": 0.01599585206138505,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "is_reference_model": true
+      },
+      "calibration": {
+        "calibration_intercept": -0.7588407146087806,
+        "calibration_slope": 0.7699076883521786,
+        "brier_score": 0.034394893313583884,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_curve_O.csv"
+    },
+    "O+Q": {
+      "risk_column": "risks_5y_q",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.03,
+          0.07
+        ]
+      ],
+      "max_net_benefit": 0.01570522826515126,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.052108521731386526
+        }
+      },
+      "calibration": {
+        "calibration_intercept": -0.10689351347538682,
+        "calibration_slope": 0.9689444191655356,
+        "brier_score": 0.03436203028105922,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_curve_O+Q.csv"
+    },
+    "S": {
+      "risk_column": "risks_5y_s",
+      "better_than_treat_all_and_none_threshold_intervals": [],
+      "max_net_benefit": 0.015896382832032388,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": -0.0981009590149855
+        }
+      },
+      "calibration": {
+        "calibration_intercept": -3.6274388480366575,
+        "calibration_slope": -0.10004969330053554,
+        "brier_score": 0.034470998082857855,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_curve_S.csv"
+    },
+    "O+S": {
+      "risk_column": "risks_5y_os",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.02
+        ],
+        [
+          0.04,
+          0.04
+        ]
+      ],
+      "max_net_benefit": 0.016024979019945648,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": -0.032515823184192716
+        }
+      },
+      "calibration": {
+        "calibration_intercept": -2.697384754524389,
+        "calibration_slope": 0.18102776298592854,
+        "brier_score": 0.03445523390425038,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_curve_O+S.csv"
+    },
+    "O+Q+S": {
+      "risk_column": "risks_5y_qs",
+      "better_than_treat_all_and_none_threshold_intervals": [
+        [
+          0.02,
+          0.11
+        ]
+      ],
+      "max_net_benefit": 0.022732274473234206,
+      "nri_vs_reference": {
+        "reference_model": "O",
+        "method": "reclassification.calculate_nri",
+        "weighting": "unweighted",
+        "cutoff_nri": {
+          "0.000000": 0.701994464846494
+        }
+      },
+      "calibration": {
+        "calibration_intercept": 1.1518319922930123,
+        "calibration_slope": 1.4145664679774337,
+        "brier_score": 0.03350903000226105,
+        "fit_status": "full_intercept_and_slope"
+      },
+      "calibration_curve_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_curve_O+Q+S.csv"
+    }
+  },
+  "time_column": "time_years",
+  "event_column": "event",
+  "event_value": "1",
+  "horizon": 5.0,
+  "nri": {
+    "reference_model": "O",
+    "cutoffs": [
+      0.0
+    ],
+    "method": "reclassification.calculate_nri",
+    "weighting": "unweighted",
+    "note": "NRI is computed on binary outcomes without IPCW/sample-weight adjustment. Interpret survival-mode NRI as exploratory."
+  },
+  "calibration_metrics_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_metrics.json",
+  "calibration_plot_file": "data/folds/outputs/osteoarthritis/output_5y/calibration_plot.png"
+}
